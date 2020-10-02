@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>Matrix Rain</title>
+    <style>
+        * {margin: 0; padding: 0;}
+        body {background: black;}
+        canvas {display: block;}
+    </style>
+</head>
+    <body>
+    <div id="wrapper">
+        <canvas id="c"></canvas>
+        <div id = "secret" style="z-index: 1; 
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    margin-right: -50%;
+                    transform: translate(-50%, -50%); 
+                    background-color: black;
+                    opacity: 0.1">
+            hello world 
+        </div>
+    </div>
+    
+    </body>
+    <script>
+
+        alert("Remember, Click before you stroke!")
+
+        var c = document.getElementById("c");
+        var ctx = c.getContext("2d");
+
+        //making the canvas full screen
+        c.height = window.innerHeight;
+        c.width = window.innerWidth;
+
+        //english characters
+        var english = "your code is out there";
+        //converting the string into an array of single characters
+        english = english.split("");
+
+        var font_size = 15;
+        var columns = c.width/font_size; //number of columns for the rain
+        //an array of drops - one per column
+        var drops = [];
+        //x below is the x coordinate
+        //1 = y co-ordinate of the drop(same for every drop initially)
+        for(var x = 0; x < columns; x++)
+            drops[x] = 1; 
+
+        //drawing the characters
+        function draw()
+        {
+            //Black BG for the canvas
+            //translucent BG to show trail
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, c.width, c.height);
+            
+            ctx.fillStyle = "#0F0"; //green text
+            ctx.font = font_size + "px arial";
+            //looping over drops
+            var latter = 0;
+            for(var i = 0; i < drops.length; i++)
+            {
+                //a random chinese character to print
+                var text = english[latter];
+                //x = i*font_size, y = value of drops[i]*font_size
+                ctx.fillText(text, i*font_size, drops[i]*font_size);
+                
+                //sending the drop back to the top randomly after it has crossed the screen
+                //adding a randomness to the reset to make the drops scattered on the Y axis
+                if(drops[i]*font_size > c.height && Math.random() > 0.975)
+                    drops[i] = 0;
+                
+                //incrementing Y coordinate
+                drops[i]++;
+
+                latter++;
+                if (latter > english.length - 1){latter = 0;}
+            }
+        }
+
+        var drow = setInterval(draw, 33);
+
+        var keyStrok = ""
+        var code = document.getElementById("secret").textContent.trim()
+        document.addEventListener('keydown', function (event) {
+            if((event.keyCode >= 48 && event.keyCode <= 90) || (event.keyCode == 32)){
+                keyStrok += keyStrok + event.key
+            }
+            if (keyStrok.length > code.length){
+                keyStrok =  keyStrok.substr(keyStrok.length - code.length)
+            }
+            console.log(keyStrok);
+
+            if (keyStrok == code){
+                clearInterval(drow);
+                var elem = document.getElementById("secret");
+                elem.textContent = "Congrats!. you solved this puzzle";
+                elem.style.font_size = '26pt';
+                elem.style.opacity = 1;
+                elem.style.color = "#0F0";
+                elem.style.fontFamily = "ariel";
+                elem.style.padding = 15;
+                elem.style.borderColor = "#0F0";
+                elem.style.borderStyle = "solid";
+                
+            }
+        });
+
+
+    </script>
+</html>
